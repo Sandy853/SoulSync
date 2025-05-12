@@ -1,0 +1,397 @@
+<html>
+<head>
+<title>HomeScreen.kt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #ed864a;}
+.s1 { color: #ebebeb;}
+.s2 { color: #ed864a; font-weight: bold;}
+.s3 { color: #54b33e;}
+.s4 { color: #33ccff; font-weight: bold;}
+.s5 { color: #7ec3e6;}
+</style>
+</head>
+<body bgcolor="#131314">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+HomeScreen.kt</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.example.itworkshopproject.screens.home</span>
+
+<span class="s1">import android.widget.Toast</span>
+<span class="s1">import androidx.compose.animation.ExperimentalAnimationApi</span>
+<span class="s1">import androidx.compose.foundation.background</span>
+<span class="s1">import androidx.compose.foundation.clickable</span>
+<span class="s1">import androidx.compose.foundation.layout.*</span>
+<span class="s1">import androidx.compose.foundation.lazy.grid.*</span>
+<span class="s1">import androidx.compose.foundation.shape.RoundedCornerShape</span>
+<span class="s1">import androidx.compose.material.icons.Icons</span>
+<span class="s1">import androidx.compose.material.icons.filled.*</span>
+<span class="s1">import androidx.compose.material3.*</span>
+<span class="s1">import androidx.compose.runtime.*</span>
+<span class="s1">import androidx.compose.ui.*</span>
+<span class="s1">import androidx.compose.ui.draw.clip</span>
+<span class="s1">import androidx.compose.ui.graphics.Brush</span>
+<span class="s1">import androidx.compose.ui.graphics.Color</span>
+<span class="s1">import androidx.compose.ui.platform.LocalContext</span>
+<span class="s1">import androidx.compose.ui.text.font.FontWeight</span>
+<span class="s1">import androidx.compose.ui.unit.*</span>
+<span class="s1">import androidx.navigation.NavController</span>
+<span class="s1">import com.example.itworkshopproject.model.Mood</span>
+<span class="s1">import com.example.itworkshopproject.navigation.Routes</span>
+<span class="s1">import com.example.itworkshopproject.screens.home.components.MoodItem</span>
+<span class="s1">import kotlinx.coroutines.launch</span>
+
+<span class="s1">@OptIn(ExperimentalMaterial3Api::</span><span class="s0">class</span><span class="s2">, </span><span class="s1">ExperimentalAnimationApi::</span><span class="s0">class</span><span class="s1">)</span>
+<span class="s1">@Composable</span>
+<span class="s0">fun </span><span class="s1">HomeScreen(username: String</span><span class="s2">, </span><span class="s1">navController: NavController) {</span>
+    <span class="s0">val </span><span class="s1">context = LocalContext.current</span>
+    <span class="s0">val </span><span class="s1">scope = rememberCoroutineScope()</span>
+    <span class="s0">var </span><span class="s1">selectedMood by remember { mutableStateOf&lt;Mood?&gt;(</span><span class="s0">null</span><span class="s1">) }</span>
+    <span class="s0">var </span><span class="s1">showQuoteDialog by remember { mutableStateOf(</span><span class="s0">false</span><span class="s1">) }</span>
+    <span class="s0">var </span><span class="s1">currentQuote by remember { mutableStateOf(</span><span class="s3">&quot;&quot;</span><span class="s1">) }</span>
+    <span class="s0">var </span><span class="s1">showStudentToolsDialog by remember { mutableStateOf(</span><span class="s0">false</span><span class="s1">) }</span>
+
+    <span class="s0">val </span><span class="s1">moodQuotes = mapOf(</span>
+        <span class="s1">Mood.HAPPY to listOf(</span><span class="s3">&quot;Spread your light!&quot;</span><span class="s2">, </span><span class="s3">&quot;Happiness looks good on you.&quot;</span><span class="s1">)</span><span class="s2">,</span>
+        <span class="s1">Mood.SAD to listOf(</span><span class="s3">&quot;It's okay to rest.&quot;</span><span class="s2">, </span><span class="s3">&quot;You're stronger than you feel.&quot;</span><span class="s1">)</span><span class="s2">,</span>
+        <span class="s1">Mood.ANGRY to listOf(</span><span class="s3">&quot;Breathe in calm. Let it go.&quot;</span><span class="s2">, </span><span class="s3">&quot;Peace starts with you.&quot;</span><span class="s1">)</span><span class="s2">,</span>
+        <span class="s1">Mood.CALM to listOf(</span><span class="s3">&quot;Stay grounded. Stay glowing.&quot;</span><span class="s2">, </span><span class="s3">&quot;Your calm is power.&quot;</span><span class="s1">)</span><span class="s2">,</span>
+        <span class="s1">Mood.ANXIOUS to listOf(</span><span class="s3">&quot;You're safe. Take deep breaths.&quot;</span><span class="s2">, </span><span class="s3">&quot;Worry less, live more.&quot;</span><span class="s1">)</span><span class="s2">,</span>
+        <span class="s1">Mood.EXCITED to listOf(</span><span class="s3">&quot;Let's turn passion into progress!&quot;</span><span class="s2">, </span><span class="s3">&quot;Today is YOUR day!&quot;</span><span class="s1">)</span><span class="s2">,</span>
+        <span class="s1">Mood.NEUTRAL to listOf(</span><span class="s3">&quot;Even ordinary days matter.&quot;</span><span class="s2">, </span><span class="s3">&quot;Stay steady. You're doing great.&quot;</span><span class="s1">)</span><span class="s2">,</span>
+        <span class="s1">Mood.TIRED to listOf(</span><span class="s3">&quot;Rest is productive too.&quot;</span><span class="s2">, </span><span class="s3">&quot;Slow down. Refuel your soul.&quot;</span><span class="s1">)</span>
+    <span class="s1">)</span>
+
+    <span class="s0">val </span><span class="s1">backgroundGradient = </span><span class="s0">when </span><span class="s1">(selectedMood) {</span>
+        <span class="s1">Mood.HAPPY -&gt; listOf(Color(</span><span class="s4">0xFFFFF176</span><span class="s1">)</span><span class="s2">, </span><span class="s1">Color(</span><span class="s4">0xFFFFF9C4</span><span class="s1">))</span>
+        <span class="s1">Mood.SAD -&gt; listOf(Color(</span><span class="s4">0xFF81D4FA</span><span class="s1">)</span><span class="s2">, </span><span class="s1">Color(</span><span class="s4">0xFFB3E5FC</span><span class="s1">))</span>
+        <span class="s1">Mood.ANGRY -&gt; listOf(Color(</span><span class="s4">0xFFEF5350</span><span class="s1">)</span><span class="s2">, </span><span class="s1">Color(</span><span class="s4">0xFFFFCDD2</span><span class="s1">))</span>
+        <span class="s1">Mood.EXCITED -&gt; listOf(Color(</span><span class="s4">0xFFBA68C8</span><span class="s1">)</span><span class="s2">, </span><span class="s1">Color(</span><span class="s4">0xFFE1BEE7</span><span class="s1">))</span>
+        <span class="s1">Mood.CALM -&gt; listOf(Color(</span><span class="s4">0xFFA5D6A7</span><span class="s1">)</span><span class="s2">, </span><span class="s1">Color(</span><span class="s4">0xFFC8E6C9</span><span class="s1">))</span>
+        <span class="s1">Mood.ANXIOUS -&gt; listOf(Color(</span><span class="s4">0xFF90CAF9</span><span class="s1">)</span><span class="s2">, </span><span class="s1">Color(</span><span class="s4">0xFFBBDEFB</span><span class="s1">))</span>
+        <span class="s1">Mood.TIRED -&gt; listOf(Color(</span><span class="s4">0xFFD1C4E9</span><span class="s1">)</span><span class="s2">, </span><span class="s1">Color(</span><span class="s4">0xFFEDE7F6</span><span class="s1">))</span>
+        <span class="s1">Mood.NEUTRAL -&gt; listOf(Color(</span><span class="s4">0xFFE0E0E0</span><span class="s1">)</span><span class="s2">, </span><span class="s1">Color(</span><span class="s4">0xFFFAFAFA</span><span class="s1">))</span>
+        <span class="s0">else </span><span class="s1">-&gt; listOf(Color.White</span><span class="s2">, </span><span class="s1">Color.White)</span>
+    <span class="s1">}</span>
+
+    <span class="s1">Scaffold(</span>
+        <span class="s1">topBar = {</span>
+            <span class="s1">TopAppBar(</span>
+                <span class="s1">title = {</span>
+                    <span class="s1">Column {</span>
+                        <span class="s1">Text(</span><span class="s3">&quot;Welcome back,&quot;</span><span class="s2">, </span><span class="s1">style = MaterialTheme.typography.bodyMedium)</span>
+                        <span class="s1">Text(username</span><span class="s2">, </span><span class="s1">style = MaterialTheme.typography.headlineSmall</span><span class="s2">, </span><span class="s1">color = MaterialTheme.colorScheme.primary)</span>
+                    <span class="s1">}</span>
+                <span class="s1">}</span><span class="s2">,</span>
+                <span class="s1">actions = {</span>
+                    <span class="s1">IconButton(onClick = { navController.navigate(Routes.Profile.route) }) {</span>
+                        <span class="s1">Icon(Icons.Default.AccountCircle</span><span class="s2">, </span><span class="s1">contentDescription = </span><span class="s3">&quot;Profile&quot;</span><span class="s1">)</span>
+                    <span class="s1">}</span>
+                <span class="s1">}</span><span class="s2">,</span>
+                <span class="s1">colors = TopAppBarDefaults.topAppBarColors(containerColor = backgroundGradient.first())</span>
+            <span class="s1">)</span>
+        <span class="s1">}</span>
+    <span class="s1">) { paddingValues -&gt;</span>
+        <span class="s1">Box(</span>
+            <span class="s1">modifier = Modifier</span>
+                <span class="s1">.fillMaxSize()</span>
+                <span class="s1">.background(Brush.verticalGradient(backgroundGradient))</span>
+                <span class="s1">.padding(paddingValues)</span>
+        <span class="s1">) {</span>
+            <span class="s1">Column(modifier = Modifier.padding(</span><span class="s4">24</span><span class="s1">.dp)) {</span>
+                <span class="s5">// Adjusted MoodSelectorCard with reduced height</span>
+                <span class="s1">Card(</span>
+                    <span class="s1">modifier = Modifier</span>
+                        <span class="s1">.fillMaxWidth()</span>
+                        <span class="s1">.height(</span><span class="s4">300</span><span class="s1">.dp) </span><span class="s5">// Reduced height</span>
+                        <span class="s1">.clip(RoundedCornerShape(</span><span class="s4">16</span><span class="s1">.dp))</span><span class="s2">,</span>
+                    <span class="s1">colors = CardDefaults.cardColors(containerColor = Color(</span><span class="s4">0xFFE9EFFF</span><span class="s1">))</span>
+                <span class="s1">) {</span>
+                    <span class="s1">Column(modifier = Modifier.padding(</span><span class="s4">16</span><span class="s1">.dp)) {</span>
+                        <span class="s1">Text(</span><span class="s3">&quot;How are you feeling today?&quot;</span><span class="s2">, </span><span class="s1">fontSize = </span><span class="s4">18</span><span class="s1">.sp</span><span class="s2">, </span><span class="s1">color = Color(</span><span class="s4">0xFF222244</span><span class="s1">))</span>
+                        <span class="s1">Spacer(modifier = Modifier.height(</span><span class="s4">8</span><span class="s1">.dp)) </span><span class="s5">// Reduced spacing</span>
+
+                        <span class="s1">LazyVerticalGrid(</span>
+                            <span class="s1">columns = GridCells.Fixed(</span><span class="s4">4</span><span class="s1">)</span><span class="s2">,</span>
+                            <span class="s1">modifier = Modifier.fillMaxWidth()</span><span class="s2">,</span>
+                            <span class="s1">verticalArrangement = Arrangement.spacedBy(</span><span class="s4">8</span><span class="s1">.dp)</span><span class="s2">, </span><span class="s5">// Reduced spacing</span>
+                            <span class="s1">horizontalArrangement = Arrangement.spacedBy(</span><span class="s4">8</span><span class="s1">.dp) </span><span class="s5">// Reduced spacing</span>
+                        <span class="s1">) {</span>
+                            <span class="s1">items(Mood.values()) { mood -&gt;</span>
+                                <span class="s1">MoodItem(</span>
+                                    <span class="s1">mood = mood</span><span class="s2">,</span>
+                                    <span class="s1">isSelected = selectedMood?.label == mood.label</span><span class="s2">,</span>
+                                    <span class="s1">onSelected = { selectedMood = mood }</span>
+                                <span class="s1">)</span>
+                            <span class="s1">}</span>
+                        <span class="s1">}</span>
+
+                        <span class="s1">Spacer(modifier = Modifier.height(</span><span class="s4">8</span><span class="s1">.dp)) </span><span class="s5">// Reduced spacing</span>
+
+                        <span class="s1">Button(</span>
+                            <span class="s1">onClick = {</span>
+                                <span class="s1">selectedMood?.let { mood -&gt;</span>
+                                    <span class="s1">scope.launch {</span>
+                                        <span class="s0">val </span><span class="s1">allowed = MoodTimeStore.canSelectMood(context)</span>
+                                        <span class="s0">if </span><span class="s1">(allowed) {</span>
+                                            <span class="s1">MoodDataStore.incrementMoodCount(context</span><span class="s2">, </span><span class="s1">mood)</span>
+                                            <span class="s1">currentQuote = moodQuotes[mood]?.random() ?: </span><span class="s3">&quot;&quot;</span>
+                                            <span class="s1">showQuoteDialog = </span><span class="s0">true</span>
+                                        <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                                            <span class="s1">Toast.makeText(context</span><span class="s2">, </span><span class="s3">&quot;Limit reached!&quot;</span><span class="s2">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span>
+                                        <span class="s1">}</span>
+                                    <span class="s1">}</span>
+                                <span class="s1">} ?: Toast.makeText(context</span><span class="s2">, </span><span class="s3">&quot;Please select a mood!&quot;</span><span class="s2">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span>
+                            <span class="s1">}</span><span class="s2">,</span>
+                            <span class="s1">modifier = Modifier.fillMaxWidth()</span><span class="s2">,</span>
+                            <span class="s1">shape = RoundedCornerShape(</span><span class="s4">50</span><span class="s1">)</span>
+                        <span class="s1">) {</span>
+                            <span class="s1">Icon(Icons.Default.Check</span><span class="s2">, </span><span class="s1">contentDescription = </span><span class="s0">null</span><span class="s1">)</span>
+                            <span class="s1">Spacer(modifier = Modifier.width(</span><span class="s4">6</span><span class="s1">.dp))</span>
+                            <span class="s1">Text(</span><span class="s3">&quot;Save My Mood&quot;</span><span class="s1">)</span>
+                        <span class="s1">}</span>
+
+                        <span class="s1">Spacer(modifier = Modifier.height(</span><span class="s4">8</span><span class="s1">.dp)) </span><span class="s5">// Reduced spacing</span>
+
+                        <span class="s1">OutlinedButton(</span>
+                            <span class="s1">onClick = { navController.navigate(Routes.MoodAnalysis.route) }</span><span class="s2">,</span>
+                            <span class="s1">modifier = Modifier.fillMaxWidth()</span><span class="s2">,</span>
+                            <span class="s1">shape = RoundedCornerShape(</span><span class="s4">50</span><span class="s1">)</span>
+                        <span class="s1">) {</span>
+                            <span class="s1">Icon(Icons.Default.ShowChart</span><span class="s2">, </span><span class="s1">contentDescription = </span><span class="s0">null</span><span class="s1">)</span>
+                            <span class="s1">Spacer(modifier = Modifier.width(</span><span class="s4">6</span><span class="s1">.dp))</span>
+                            <span class="s1">Text(</span><span class="s3">&quot;View Mood Analysis&quot;</span><span class="s1">)</span>
+                        <span class="s1">}</span>
+                    <span class="s1">}</span>
+                <span class="s1">}</span>
+
+                <span class="s1">Spacer(modifier = Modifier.height(</span><span class="s4">16</span><span class="s1">.dp))</span>
+
+                <span class="s1">DiaryAndMemoryCards(navController)</span>
+
+                <span class="s1">Spacer(modifier = Modifier.height(</span><span class="s4">12</span><span class="s1">.dp))</span>
+
+                <span class="s1">HabitHubCard(navController)</span>
+
+                <span class="s1">Spacer(modifier = Modifier.height(</span><span class="s4">12</span><span class="s1">.dp))</span>
+
+                <span class="s5">// New Student Tools Card</span>
+                <span class="s1">Card(</span>
+                    <span class="s1">modifier = Modifier</span>
+                        <span class="s1">.fillMaxWidth()</span>
+                        <span class="s1">.height(</span><span class="s4">90</span><span class="s1">.dp)</span>
+                        <span class="s1">.clickable { showStudentToolsDialog = </span><span class="s0">true </span><span class="s1">}</span><span class="s2">,</span>
+                    <span class="s1">colors = CardDefaults.cardColors(containerColor = Color(</span><span class="s4">0xFFE8EAF6</span><span class="s1">))</span>
+                <span class="s1">) {</span>
+                    <span class="s1">Row(</span>
+                        <span class="s1">modifier = Modifier.padding(</span><span class="s4">16</span><span class="s1">.dp)</span><span class="s2">,</span>
+                        <span class="s1">verticalAlignment = Alignment.CenterVertically</span>
+                    <span class="s1">) {</span>
+                        <span class="s1">Icon(Icons.Default.School</span><span class="s2">, </span><span class="s1">contentDescription = </span><span class="s0">null</span><span class="s2">, </span><span class="s1">tint = Color(</span><span class="s4">0xFF3949AB</span><span class="s1">)</span><span class="s2">, </span><span class="s1">modifier = Modifier.size(</span><span class="s4">30</span><span class="s1">.dp))</span>
+                        <span class="s1">Spacer(modifier = Modifier.width(</span><span class="s4">12</span><span class="s1">.dp))</span>
+                        <span class="s1">Column {</span>
+                            <span class="s1">Text(</span><span class="s3">&quot;Student Tools&quot;</span><span class="s2">, </span><span class="s1">fontSize = </span><span class="s4">16</span><span class="s1">.sp</span><span class="s2">, </span><span class="s1">color = Color(</span><span class="s4">0xFF283593</span><span class="s1">)</span><span class="s2">, </span><span class="s1">fontWeight = FontWeight.Bold)</span>
+                            <span class="s1">Text(</span><span class="s3">&quot;Academic productivity tools&quot;</span><span class="s2">, </span><span class="s1">fontSize = </span><span class="s4">13</span><span class="s1">.sp</span><span class="s2">, </span><span class="s1">color = Color.Gray)</span>
+                        <span class="s1">}</span>
+                    <span class="s1">}</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+
+            <span class="s0">if </span><span class="s1">(showQuoteDialog) {</span>
+                <span class="s1">AlertDialog(</span>
+                    <span class="s1">onDismissRequest = { showQuoteDialog = </span><span class="s0">false </span><span class="s1">}</span><span class="s2">,</span>
+                    <span class="s1">confirmButton = {</span>
+                        <span class="s1">TextButton(onClick = { showQuoteDialog = </span><span class="s0">false </span><span class="s1">}) {</span>
+                            <span class="s1">Text(</span><span class="s3">&quot;Close&quot;</span><span class="s1">)</span>
+                        <span class="s1">}</span>
+                    <span class="s1">}</span><span class="s2">,</span>
+                    <span class="s1">title = { Text(</span><span class="s3">&quot;Your Mood Companion&quot;</span><span class="s1">) }</span><span class="s2">,</span>
+                    <span class="s1">text = {</span>
+                        <span class="s1">Text(text = currentQuote</span><span class="s2">, </span><span class="s1">fontSize = </span><span class="s4">16</span><span class="s1">.sp</span><span class="s2">, </span><span class="s1">fontWeight = FontWeight.Medium)</span>
+                    <span class="s1">}</span><span class="s2">,</span>
+                    <span class="s1">containerColor = Color.White</span><span class="s2">,</span>
+                    <span class="s1">shape = RoundedCornerShape(</span><span class="s4">20</span><span class="s1">.dp)</span>
+                <span class="s1">)</span>
+            <span class="s1">}</span>
+
+            <span class="s0">if </span><span class="s1">(showStudentToolsDialog) {</span>
+                <span class="s1">AlertDialog(</span>
+                    <span class="s1">onDismissRequest = { showStudentToolsDialog = </span><span class="s0">false </span><span class="s1">}</span><span class="s2">,</span>
+                    <span class="s1">modifier = Modifier.fillMaxWidth(</span><span class="s4">0.9f</span><span class="s1">)</span><span class="s2">,</span>
+                    <span class="s1">title = {</span>
+                        <span class="s1">Text(</span>
+                            <span class="s3">&quot;Student Tools&quot;</span><span class="s2">,</span>
+                            <span class="s1">color = Color(</span><span class="s4">0xFF283593</span><span class="s1">)</span><span class="s2">,</span>
+                            <span class="s1">fontWeight = FontWeight.Bold</span>
+                        <span class="s1">)</span>
+                    <span class="s1">}</span><span class="s2">,</span>
+                    <span class="s1">text = {</span>
+                        <span class="s1">Column(</span>
+                            <span class="s1">modifier = Modifier.fillMaxWidth()</span><span class="s2">,</span>
+                            <span class="s1">verticalArrangement = Arrangement.spacedBy(</span><span class="s4">12</span><span class="s1">.dp)</span>
+                        <span class="s1">) {</span>
+                            <span class="s5">// Digital Notes</span>
+                            <span class="s1">Card(</span>
+                                <span class="s1">modifier = Modifier</span>
+                                    <span class="s1">.fillMaxWidth()</span>
+                                    <span class="s1">.height(</span><span class="s4">90</span><span class="s1">.dp)</span>
+                                    <span class="s1">.clickable {</span>
+                                        <span class="s1">showStudentToolsDialog = </span><span class="s0">false</span>
+                                        <span class="s1">navController.navigate(Routes.StudentNotes.route)</span>
+                                    <span class="s1">}</span><span class="s2">,</span>
+                                <span class="s1">colors = CardDefaults.cardColors(containerColor = Color(</span><span class="s4">0xFFE3F2FD</span><span class="s1">))</span>
+                            <span class="s1">) {</span>
+                                <span class="s1">Row(</span>
+                                    <span class="s1">modifier = Modifier.padding(</span><span class="s4">16</span><span class="s1">.dp)</span><span class="s2">,</span>
+                                    <span class="s1">verticalAlignment = Alignment.CenterVertically</span>
+                                <span class="s1">) {</span>
+                                    <span class="s1">Icon(Icons.Default.Note</span><span class="s2">, </span><span class="s1">contentDescription = </span><span class="s0">null</span><span class="s2">, </span><span class="s1">tint = Color(</span><span class="s4">0xFF1565C0</span><span class="s1">)</span><span class="s2">, </span><span class="s1">modifier = Modifier.size(</span><span class="s4">30</span><span class="s1">.dp))</span>
+                                    <span class="s1">Spacer(modifier = Modifier.width(</span><span class="s4">12</span><span class="s1">.dp))</span>
+                                    <span class="s1">Column {</span>
+                                        <span class="s1">Text(</span><span class="s3">&quot;Digital Notes&quot;</span><span class="s2">, </span><span class="s1">fontSize = </span><span class="s4">16</span><span class="s1">.sp</span><span class="s2">, </span><span class="s1">color = Color(</span><span class="s4">0xFF0D47A1</span><span class="s1">)</span><span class="s2">, </span><span class="s1">fontWeight = FontWeight.Bold)</span>
+                                        <span class="s1">Text(</span><span class="s3">&quot;Take and organize your notes&quot;</span><span class="s2">, </span><span class="s1">fontSize = </span><span class="s4">13</span><span class="s1">.sp</span><span class="s2">, </span><span class="s1">color = Color.Gray)</span>
+                                    <span class="s1">}</span>
+                                <span class="s1">}</span>
+                            <span class="s1">}</span>
+
+                            <span class="s5">// 🔁 New Timetable Scheduler</span>
+                            <span class="s1">Card(</span>
+                                <span class="s1">modifier = Modifier</span>
+                                    <span class="s1">.fillMaxWidth()</span>
+                                    <span class="s1">.height(</span><span class="s4">90</span><span class="s1">.dp)</span>
+                                    <span class="s1">.clickable {</span>
+                                        <span class="s1">showStudentToolsDialog = </span><span class="s0">false</span>
+                                        <span class="s1">navController.navigate(Routes.TimeTableScheduler.route)</span>
+                                    <span class="s1">}</span><span class="s2">,</span>
+                                <span class="s1">colors = CardDefaults.cardColors(containerColor = Color(</span><span class="s4">0xFFE8F5E9</span><span class="s1">))</span>
+                            <span class="s1">) {</span>
+                                <span class="s1">Row(</span>
+                                    <span class="s1">modifier = Modifier.padding(</span><span class="s4">16</span><span class="s1">.dp)</span><span class="s2">,</span>
+                                    <span class="s1">verticalAlignment = Alignment.CenterVertically</span>
+                                <span class="s1">) {</span>
+                                    <span class="s1">Icon(Icons.Default.Schedule</span><span class="s2">, </span><span class="s1">contentDescription = </span><span class="s0">null</span><span class="s2">, </span><span class="s1">tint = Color(</span><span class="s4">0xFF1B5E20</span><span class="s1">)</span><span class="s2">, </span><span class="s1">modifier = Modifier.size(</span><span class="s4">30</span><span class="s1">.dp))</span>
+                                    <span class="s1">Spacer(modifier = Modifier.width(</span><span class="s4">12</span><span class="s1">.dp))</span>
+                                    <span class="s1">Column {</span>
+                                        <span class="s1">Text(</span><span class="s3">&quot;Timetable Scheduler&quot;</span><span class="s2">, </span><span class="s1">fontSize = </span><span class="s4">16</span><span class="s1">.sp</span><span class="s2">, </span><span class="s1">color = Color(</span><span class="s4">0xFF1B5E20</span><span class="s1">)</span><span class="s2">, </span><span class="s1">fontWeight = FontWeight.Bold)</span>
+                                        <span class="s1">Text(</span><span class="s3">&quot;Plan your study routine&quot;</span><span class="s2">, </span><span class="s1">fontSize = </span><span class="s4">13</span><span class="s1">.sp</span><span class="s2">, </span><span class="s1">color = Color.Gray)</span>
+                                    <span class="s1">}</span>
+                                <span class="s1">}</span>
+                            <span class="s1">}</span>
+
+                            <span class="s5">// Remaining placeholder box</span>
+                            <span class="s5">// Deadline Dominator - Last Functional Slot</span>
+                            <span class="s1">Card(</span>
+                                <span class="s1">modifier = Modifier</span>
+                                    <span class="s1">.fillMaxWidth()</span>
+                                    <span class="s1">.height(</span><span class="s4">90</span><span class="s1">.dp)</span>
+                                    <span class="s1">.clickable {</span>
+                                        <span class="s1">showStudentToolsDialog = </span><span class="s0">false</span>
+                                        <span class="s1">navController.navigate(Routes.DeadlineDominator.route)</span>
+                                    <span class="s1">}</span><span class="s2">,</span>
+                                <span class="s1">colors = CardDefaults.cardColors(containerColor = Color(</span><span class="s4">0xFFF3E5F5</span><span class="s1">))</span>
+                            <span class="s1">) {</span>
+                                <span class="s1">Row(</span>
+                                    <span class="s1">modifier = Modifier.padding(</span><span class="s4">16</span><span class="s1">.dp)</span><span class="s2">,</span>
+                                    <span class="s1">verticalAlignment = Alignment.CenterVertically</span>
+                                <span class="s1">) {</span>
+                                    <span class="s1">Icon(Icons.Default.Warning</span><span class="s2">, </span><span class="s1">contentDescription = </span><span class="s0">null</span><span class="s2">, </span><span class="s1">tint = Color(</span><span class="s4">0xFF6A1B9A</span><span class="s1">)</span><span class="s2">, </span><span class="s1">modifier = Modifier.size(</span><span class="s4">30</span><span class="s1">.dp))</span>
+                                    <span class="s1">Spacer(modifier = Modifier.width(</span><span class="s4">12</span><span class="s1">.dp))</span>
+                                    <span class="s1">Column {</span>
+                                        <span class="s1">Text(</span><span class="s3">&quot;Deadline Dominator&quot;</span><span class="s2">, </span><span class="s1">fontSize = </span><span class="s4">16</span><span class="s1">.sp</span><span class="s2">, </span><span class="s1">color = Color(</span><span class="s4">0xFF4A148C</span><span class="s1">)</span><span class="s2">, </span><span class="s1">fontWeight = FontWeight.Bold)</span>
+                                        <span class="s1">Text(</span><span class="s3">&quot;Manage tasks &amp; stay on track&quot;</span><span class="s2">, </span><span class="s1">fontSize = </span><span class="s4">13</span><span class="s1">.sp</span><span class="s2">, </span><span class="s1">color = Color.Gray)</span>
+                                    <span class="s1">}</span>
+                                <span class="s1">}</span>
+                            <span class="s1">}</span>
+
+                        <span class="s1">}</span>
+                    <span class="s1">}</span><span class="s2">,</span>
+                    <span class="s1">confirmButton = {</span>
+                        <span class="s1">TextButton(</span>
+                            <span class="s1">onClick = { showStudentToolsDialog = </span><span class="s0">false </span><span class="s1">}</span><span class="s2">,</span>
+                            <span class="s1">colors = ButtonDefaults.textButtonColors(contentColor = Color(</span><span class="s4">0xFF283593</span><span class="s1">))</span>
+                        <span class="s1">) {</span>
+                            <span class="s1">Text(</span><span class="s3">&quot;Close&quot;</span><span class="s1">)</span>
+                        <span class="s1">}</span>
+                    <span class="s1">}</span><span class="s2">,</span>
+                    <span class="s1">containerColor = Color.White</span><span class="s2">,</span>
+                    <span class="s1">shape = RoundedCornerShape(</span><span class="s4">20</span><span class="s1">.dp)</span>
+                <span class="s1">)</span>
+            <span class="s1">}</span>
+
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+<span class="s1">}</span>
+
+<span class="s1">@Composable</span>
+<span class="s0">fun </span><span class="s1">DiaryAndMemoryCards(navController: NavController) {</span>
+    <span class="s0">val </span><span class="s1">cardHeight = </span><span class="s4">90</span><span class="s1">.dp</span>
+
+    <span class="s1">Card(</span>
+        <span class="s1">modifier = Modifier</span>
+            <span class="s1">.fillMaxWidth()</span>
+            <span class="s1">.height(cardHeight)</span>
+            <span class="s1">.clickable { navController.navigate(Routes.Diary.route) }</span><span class="s2">,</span>
+        <span class="s1">colors = CardDefaults.cardColors(containerColor = Color(</span><span class="s4">0xFFF1F8E9</span><span class="s1">))</span>
+    <span class="s1">) {</span>
+        <span class="s1">Row(</span>
+            <span class="s1">modifier = Modifier.padding(</span><span class="s4">16</span><span class="s1">.dp)</span><span class="s2">,</span>
+            <span class="s1">verticalAlignment = Alignment.CenterVertically</span>
+        <span class="s1">) {</span>
+            <span class="s1">Icon(Icons.Default.CalendarToday</span><span class="s2">, </span><span class="s1">contentDescription = </span><span class="s0">null</span><span class="s2">, </span><span class="s1">tint = Color(</span><span class="s4">0xFF558B2F</span><span class="s1">)</span><span class="s2">, </span><span class="s1">modifier = Modifier.size(</span><span class="s4">30</span><span class="s1">.dp))</span>
+            <span class="s1">Spacer(modifier = Modifier.width(</span><span class="s4">12</span><span class="s1">.dp))</span>
+            <span class="s1">Column {</span>
+                <span class="s1">Text(</span><span class="s3">&quot;Digital Diary&quot;</span><span class="s2">, </span><span class="s1">fontSize = </span><span class="s4">16</span><span class="s1">.sp</span><span class="s2">, </span><span class="s1">color = Color(</span><span class="s4">0xFF33691E</span><span class="s1">)</span><span class="s2">, </span><span class="s1">fontWeight = FontWeight.Bold)</span>
+                <span class="s1">Text(</span><span class="s3">&quot;Write &amp; track your feelings&quot;</span><span class="s2">, </span><span class="s1">fontSize = </span><span class="s4">13</span><span class="s1">.sp</span><span class="s2">, </span><span class="s1">color = Color.Gray)</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s1">Spacer(modifier = Modifier.height(</span><span class="s4">12</span><span class="s1">.dp))</span>
+
+    <span class="s1">Card(</span>
+        <span class="s1">modifier = Modifier</span>
+            <span class="s1">.fillMaxWidth()</span>
+            <span class="s1">.height(cardHeight)</span>
+            <span class="s1">.clickable { navController.navigate(Routes.MemoryCapsule.route) }</span><span class="s2">,</span>
+        <span class="s1">colors = CardDefaults.cardColors(containerColor = Color(</span><span class="s4">0xFFFFF3E0</span><span class="s1">))</span>
+    <span class="s1">) {</span>
+        <span class="s1">Row(</span>
+            <span class="s1">modifier = Modifier.padding(</span><span class="s4">16</span><span class="s1">.dp)</span><span class="s2">,</span>
+            <span class="s1">verticalAlignment = Alignment.CenterVertically</span>
+        <span class="s1">) {</span>
+            <span class="s1">Icon(Icons.Default.Star</span><span class="s2">, </span><span class="s1">contentDescription = </span><span class="s0">null</span><span class="s2">, </span><span class="s1">tint = Color(</span><span class="s4">0xFFFF6F00</span><span class="s1">)</span><span class="s2">, </span><span class="s1">modifier = Modifier.size(</span><span class="s4">30</span><span class="s1">.dp))</span>
+            <span class="s1">Spacer(modifier = Modifier.width(</span><span class="s4">12</span><span class="s1">.dp))</span>
+            <span class="s1">Column {</span>
+                <span class="s1">Text(</span><span class="s3">&quot;Memory Capsule&quot;</span><span class="s2">, </span><span class="s1">fontSize = </span><span class="s4">16</span><span class="s1">.sp</span><span class="s2">, </span><span class="s1">color = Color(</span><span class="s4">0xFFEF6C00</span><span class="s1">)</span><span class="s2">, </span><span class="s1">fontWeight = FontWeight.Bold)</span>
+                <span class="s1">Text(</span><span class="s3">&quot;Store emotional memories&quot;</span><span class="s2">, </span><span class="s1">fontSize = </span><span class="s4">13</span><span class="s1">.sp</span><span class="s2">, </span><span class="s1">color = Color.Gray)</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+<span class="s1">}</span>
+
+<span class="s1">@Composable</span>
+<span class="s0">fun </span><span class="s1">HabitHubCard(navController: NavController) {</span>
+    <span class="s1">Card(</span>
+        <span class="s1">modifier = Modifier</span>
+            <span class="s1">.fillMaxWidth()</span>
+            <span class="s1">.height(</span><span class="s4">90</span><span class="s1">.dp)</span>
+            <span class="s1">.clickable { navController.navigate(Routes.HabitHub.route) }</span><span class="s2">,</span>
+        <span class="s1">colors = CardDefaults.cardColors(containerColor = Color(</span><span class="s4">0xFFE8F5E9</span><span class="s1">))</span>
+    <span class="s1">) {</span>
+        <span class="s1">Row(</span>
+            <span class="s1">modifier = Modifier.padding(</span><span class="s4">16</span><span class="s1">.dp)</span><span class="s2">,</span>
+            <span class="s1">verticalAlignment = Alignment.CenterVertically</span>
+        <span class="s1">) {</span>
+            <span class="s1">Icon(Icons.Default.FitnessCenter</span><span class="s2">, </span><span class="s1">contentDescription = </span><span class="s0">null</span><span class="s2">, </span><span class="s1">tint = Color(</span><span class="s4">0xFF1B5E20</span><span class="s1">)</span><span class="s2">, </span><span class="s1">modifier = Modifier.size(</span><span class="s4">30</span><span class="s1">.dp))</span>
+            <span class="s1">Spacer(modifier = Modifier.width(</span><span class="s4">12</span><span class="s1">.dp))</span>
+            <span class="s1">Column {</span>
+                <span class="s1">Text(</span><span class="s3">&quot;Habit Builder&quot;</span><span class="s2">, </span><span class="s1">fontSize = </span><span class="s4">16</span><span class="s1">.sp</span><span class="s2">, </span><span class="s1">color = Color(</span><span class="s4">0xFF1B5E20</span><span class="s1">)</span><span class="s2">, </span><span class="s1">fontWeight = FontWeight.Bold)</span>
+                <span class="s1">Text(</span><span class="s3">&quot;Create &amp; track positive habits&quot;</span><span class="s2">, </span><span class="s1">fontSize = </span><span class="s4">13</span><span class="s1">.sp</span><span class="s2">, </span><span class="s1">color = Color.Gray)</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+<span class="s1">}</span></pre>
+</body>
+</html>

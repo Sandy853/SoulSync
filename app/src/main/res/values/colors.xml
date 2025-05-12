@@ -1,0 +1,9 @@
+<!-- res/values/colors.xml -->
+<resources>
+    <color name="primary">#FF0F3460</color>
+    <color name="primary_dark">#FF0A2640</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="purple_500">#6200EE</color>
+    <color name="purple_700">#3700B3</color>
+    <color name="teal_200">#03DAC6</color>
+</resources>

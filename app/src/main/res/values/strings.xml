@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">SoulSyncc</string>
+    <string name="welcome_back">Welcome Back</string>
+    <string name="sync_your_soul_again">Sync your soul again</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="remember_me">Remember me</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="sign_in">Sign In</string>
+    <string name="dont_have_account">Don\'t have an account?</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="or_sign_in_with">Or sign in with</string>
+    <string name="choose_mood">Choose your mood right now</string>
+    <string name="sync_mood">Sync My Mood</string>
+</resources>
